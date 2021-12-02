@@ -264,14 +264,17 @@ public:
 		m_[0] = new MaxonMotor(0x01, MaxonMotor::CONTROL_PPM);
 		m_[1] = new MaxonMotor(0x02, MaxonMotor::CONTROL_PVM);
 		m_[2] = new MaxonMotor(0x03, MaxonMotor::CONTROL_PPM);
+		m_[3] = new MaxonMotor(0x04, MaxonMotor::CONTROL_PVM);
 
 		m_[0]->init();
 		m_[1]->init();
 		m_[2]->init();
+		m_[3]->init();
 
 		m_[0]->start();
 		m_[1]->start();
 		m_[2]->start();
+		m_[3]->start();
 
 		CANOpen_NMT(CO_OP, 0);
 
@@ -313,7 +316,7 @@ private:
 		usleep(1000); // 1ms delay between commands
 
 		int i;
-		for(i = 0; i < 3; i++){
+		for(i = 0; i < 4; i++){
 			if(m_[i]->read(&statusword_tmp, &actual_value_tmp)){
 				motor_output_msg_.buttons[i] = statusword_tmp;
 				motor_output_msg_.axes[i] = actual_value_tmp;
@@ -330,12 +333,14 @@ private:
 		if (msg->buttons[0] == 1) m_[0]->new_setpoint((int32_t)msg->axes[0]);
 		if (msg->buttons[1] == 1) m_[1]->new_setpoint((int32_t)msg->axes[1]);
 		if (msg->buttons[2] == 1) m_[2]->new_setpoint((int32_t)msg->axes[2]);
+		if (msg->buttons[3] == 1) m_[3]->new_setpoint((int32_t)msg->axes[3]);
 
 		usleep(1000); // 1ms delay between commands
 
 		if (msg->buttons[0] == 1) m_[0]->go_setpoint();
 		if (msg->buttons[1] == 1) m_[1]->go_setpoint();
 		if (msg->buttons[2] == 1) m_[2]->go_setpoint();
+		if (msg->buttons[3] == 1) m_[3]->go_setpoint();
 	}
 
 	// ROS variables
